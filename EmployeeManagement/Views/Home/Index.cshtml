@@ -1,8 +1,51 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="text-center text-white bg-gradient bg-primary py-5" style="position: relative;">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold">Welcome to <span class="text-info">Employee Management</span></h1>
+        <p class="lead mb-4">Smart, secure, and simple way to manage your organization's employee records.</p>
+        <a asp-controller="Employee" asp-action="Index" class="btn btn-info btn-lg me-3 shadow">Get Started</a>
+        <a href="#features" class="btn btn-outline-light btn-lg">Learn More</a>
+    </div>
+</section>
+
+
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5 fw-semibold">Why Choose Us?</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow border-0 rounded-4">
+                    <div class="card-body">
+                        <i class="bi bi-layers display-4 text-info mb-3"></i>
+                        <h5 class="card-title">User-Friendly UI</h5>
+                        <p class="card-text">A clean, intuitive interface with Bootswatch themes for a professional look.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow border-0 rounded-4">
+                    <div class="card-body">
+                        <i class="bi bi-shield-lock-fill display-4 text-info mb-3"></i>
+                        <h5 class="card-title">Secure & Reliable</h5>
+                        <p class="card-text">Built with ASP.NET Core MVC and PostgreSQL to keep your data safe and efficient.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow border-0 rounded-4">
+                    <div class="card-body">
+                        <i class="bi bi-speedometer2 display-4 text-info mb-3"></i>
+                        <h5 class="card-title">Performance Driven</h5>
+                        <p class="card-text">Optimized backend architecture to ensure speed, scalability, and ease of access.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

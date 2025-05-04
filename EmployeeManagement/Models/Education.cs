@@ -4,10 +4,10 @@ namespace EmployeeManagement.Models
 {
     public class Education
     {
-        public int Id { get; set; }  
+        public int Id { get; set; }
 
-   
         public int EmployeeId { get; set; }
+
         public Employee Employee { get; set; }
 
         [Required]
@@ -19,4 +19,5 @@ namespace EmployeeManagement.Models
         [Range(0, 100)]
         public decimal Percentage { get; set; }
     }
+
 }

@@ -1,0 +1,196 @@
+﻿@model EmployeeManagement.Models.Employee
+
+@{
+    ViewData["Title"] = "Add Employee";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary text-center">Add New Employee</h2>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="text-center mb-4">
+            <label for="Photo" style="cursor: pointer; display: inline-block;">
+                <img id="avatarPreview"
+                     src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80"
+                     alt="Upload Profile"
+                     style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; filter: grayscale(100%); border: 2px solid #ccc;" />
+                <input type="file" id="Photo" name="Photo" accept="image/png, image/jpeg" style="display: none;" />
+            </label>
+            <div style="color: gray; margin-top: 8px;">Click image to upload profile photo</div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-info mb-3">Personal Details</h5>
+
+                        <div class="mb-3">
+                            <label for="FirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName" required pattern="^[A-Za-z\s]+$" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="MiddleName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" id="MiddleName" name="MiddleName" value="@Model.MiddleName" required pattern="^[A-Za-z\s]+$" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="LastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName" required pattern="^[A-Za-z\s]+$" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Dob" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="Dob" name="Dob" value="@Model.Dob.ToString("yyyy-MM-dd")" required />
+                            <div id="dobError" style="color: red; display: none;"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Gender" class="form-label">Gender</label>
+                            @Html.DropDownListFor(model => model.Gender,
+                            new SelectList(Enum.GetValues(typeof(EmployeeManagement.Helper.Gender))),
+                            "Select Gender",
+                            new { @class = "form-select", required = "required" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ContactNo" class="form-label">Contact No</label>
+                            <input type="tel" class="form-control" id="ContactNo" name="ContactNo" value="@Model.ContactNo" required maxlength="10" pattern="\d{10}" title="Enter 10-digit number only" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" />
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Education -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-info mb-3">Education</h5>
+
+                        <div id="education-container">
+                            <div class="row g-2 education-entry mb-3">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control"
+                                           name="Educations[0].Degree"
+                                           placeholder="Degree"
+                                           required
+                                           pattern="^[a-zA-Z\s]+$"
+                                           title="Only letters and spaces allowed." />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <input type="number" class="form-control"
+                                           name="Educations[0].PassingYear"
+                                           placeholder="Passing Year"
+                                           required
+                                           min="1900"
+                                           max="2025"
+                                           id="PassingYear0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="number" class="form-control" name="Educations[0].Percentage" placeholder="Percentage" required step="0.1" min="0" max="100" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- + Button -->
+                        <div class="d-flex justify-content-end">
+                            <button type="button" id="add-education"
+                                    style="width: 36px; height: 36px; border-radius: 50%; background-color: #e9ecef; border: 1px solid #ccc; font-size: 22px; display: flex; align-items: center; justify-content: center;">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success me-2 px-4">Save</button>
+                    <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+         const photoInput = document.getElementById("Photo");
+        const avatarPreview = document.getElementById("avatarPreview");
+        photoInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    avatarPreview.src = e.target.result;
+                    avatarPreview.style.filter = "grayscale(0%)";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Only image files are allowed.');
+                photoInput.value = '';  
+            }
+        });
+
+         const dobInput = document.getElementById("Dob");
+        const dobError = document.getElementById("dobError");
+        const today = new Date();
+        const minDob = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate());
+        const maxDob = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+        dobInput.min = minDob.toISOString().split('T')[0];
+        dobInput.max = maxDob.toISOString().split('T')[0];
+
+        dobInput.addEventListener("change", function () {
+            const entered = new Date(this.value);
+            if (entered < minDob) {
+                dobError.textContent = "Employee must be less than 60 years old.";
+                dobError.style.display = "block";
+            } else if (entered > maxDob) {
+                dobError.textContent = "Employee must be at least 18 years old.";
+                dobError.style.display = "block";
+            } else {
+                dobError.style.display = "none";
+            }
+        });
+
+        window.addEventListener('load', function () {
+             const enteredDob = new Date(dobInput.value);
+            if (enteredDob < minDob) {
+                dobError.textContent = "Employee must be less than 60 years old.";
+                dobError.style.display = "block";
+            } else if (enteredDob > maxDob) {
+                dobError.textContent = "Employee must be at least 18 years old.";
+                dobError.style.display = "block";
+            }
+        });
+
+         let eduIndex = 1;
+        const eduContainer = document.getElementById("education-container");
+
+        document.getElementById('add-education').addEventListener('click', function () {
+            var educationEntry = document.createElement('div');
+            educationEntry.classList.add('row', 'g-2', 'education-entry', 'mb-3');
+            educationEntry.innerHTML = `
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="Educations[${eduIndex}].Degree" placeholder="Degree" required pattern="^[a-zA-Z\s]+$" title="Only letters and spaces allowed." />
+                </div>
+                <div class="col-md-4">
+                    <input type="number" class="form-control" name="Educations[${eduIndex}].PassingYear" placeholder="Passing Year" required min="1900" max="2025" />
+                </div>
+                <div class="col-md-4">
+                    <input type="number" class="form-control" name="Educations[${eduIndex}].Percentage" placeholder="Percentage" required step="0.1" min="0" max="100" />
+                </div>
+            `;
+            eduContainer.appendChild(educationEntry);
+            eduIndex++;
+        });
+    </script>
+}
