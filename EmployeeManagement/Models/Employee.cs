@@ -33,7 +33,8 @@ namespace EmployeeManagement.Models
         public string ContactNo { get; set; }
 
         [Required]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+
         public string Email { get; set; }
 
         [Required]

@@ -7,8 +7,7 @@
 <div class="container mt-5">
     <h3 class="text-center mb-4">Employee Report</h3>
 
-    <!-- Date Range and Search Form -->
-    <form method="get" asp-action="GenerateReport" class="row mb-4">
+     <form method="get" asp-action="Report" class="row mb-4">
         <div class="col-md-3">
             <input type="date" name="fromDate" class="form-control" value="@ViewData["FromDate"]" />
         </div>
@@ -23,8 +22,7 @@
         </div>
     </form>
 
-    <!-- Employee Table -->
-    <table class="table table-bordered">
+     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Employee Code</th>
@@ -47,16 +45,15 @@
             }
         </tbody>
     </table>
-
-    <!-- Pagination -->
     <nav>
         <ul class="pagination justify-content-center">
-            @for (var i = 1; i <= ViewData["TotalPages"] as int?; i++)
+            @for (var i = 1; i <= (ViewData["TotalPages"] as int? ?? 1); i++)
             {
-                <li class="page-item @(i == (ViewData["CurrentPage"] as int? ? ViewData["CurrentPage"] : 1) ? "active" : "")">
+                <li class="page-item @(i == (ViewData["CurrentPage"] as int? ?? 1) ? "active" : "")">
                     <a class="page-link" asp-action="GenerateReport" asp-route-page="@i" asp-route-fromDate="@ViewData["FromDate"]" asp-route-toDate="@ViewData["ToDate"]" asp-route-searchKeyword="@ViewData["SearchKeyword"]">@i</a>
                 </li>
             }
         </ul>
     </nav>
+
 </div>

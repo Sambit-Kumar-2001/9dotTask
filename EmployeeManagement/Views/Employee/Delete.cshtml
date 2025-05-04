@@ -9,13 +9,11 @@
         <div class="card-body">
             <h3 class="text-danger text-center mb-4">Are you sure you want to delete this employee?</h3>
 
-            <!-- Employee Info -->
-            <div class="row mb-3">
+             <div class="row mb-3">
                 <div class="col-md-4 d-flex justify-content-center">
-                    <!-- Display employee photo or fallback avatar -->
-                    @if (string.IsNullOrEmpty(Model.PhotoPath))
+                     @if (string.IsNullOrEmpty(Model.PhotoPath))
                     {
-                        <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Employee Avatar" class="img-fluid rounded-circle shadow-sm" style="max-width: 120px; max-height: 120px;" />
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80" alt="Employee Avatar" class="img-fluid rounded-circle shadow-sm" style="max-width: 120px; max-height: 120px;" />
                     }
                     else
                     {
@@ -23,10 +21,8 @@
                     }
                 </div>
                 <div class="col-md-8">
-                    <!-- Employee Name -->
-                    <h5 class="font-weight-bold text-primary mb-2">@Model.FirstName @Model.LastName</h5>
-                    <!-- Employee Details -->
-                    <p class="mb-1"><strong>Email:</strong> @Model.Email</p>
+                     <h5 class="font-weight-bold text-primary mb-2">@Model.FirstName @Model.LastName</h5>
+                     <p class="mb-1"><strong>Email:</strong> @Model.Email</p>
                     <p class="mb-1"><strong>Contact:</strong> @Model.ContactNo</p>
                     <p><strong>Date of Birth:</strong> @Model.Dob.ToString("MMMM dd, yyyy")</p>
                 </div>
@@ -35,8 +31,7 @@
 
             <hr />
 
-            <!-- Education History -->
-            <h5 class="text-secondary">Education History</h5>
+             <h5 class="text-secondary">Education History</h5>
             @if (Model.Educations != null && Model.Educations.Any())
             {
                 <ul class="list-group mb-4">
@@ -56,22 +51,19 @@
 
             <hr />
 
-            <!-- Confirmation -->
-            <div class="alert alert-warning text-center">
+             <div class="alert alert-warning text-center">
                 <strong>Warning:</strong> Deleting this employee will also remove all associated education records.
             </div>
 
             <form asp-action="DeleteConfirmed" method="post" class="mt-4">
                 <input type="hidden" asp-for="Id" />
 
-                <!-- Confirmation Input -->
-                <div class="mb-3 text-center">
+                 <div class="mb-3 text-center">
                     <label for="confirmationText" class="form-label text-danger"><strong>Type "DELETE @Model.EmployeeCode" to confirm:</strong></label>
                     <input type="text" id="confirmationText" name="ConfirmationText" class="form-control w-50 mx-auto" required placeholder="e.g. DELETE Emp001" />
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="d-flex justify-content-between">
+                 <div class="d-flex justify-content-between">
                     <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
                     <button type="submit" class="btn btn-danger">Confirm Delete</button>
                 </div>
@@ -80,8 +72,6 @@
     </div>
 </div>
 
-<!-- Optional JavaScript for dynamic confirmation -->
-<script>
-    // Optional: auto-focus the confirmation text field when the page loads
-    document.getElementById("confirmationText")?.focus();
+ <script>
+     document.getElementById("confirmationText")?.focus();
 </script>

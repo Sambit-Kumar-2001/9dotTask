@@ -28,56 +28,45 @@ namespace EmployeeManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Employee employee, IFormFile Photo)
         {
-            // Check if the photo is uploaded
             if (Photo != null && Photo.Length > 0)
             {
-                // Get the file extension
                 var extension = Path.GetExtension(Photo.FileName).ToLower();
 
-                // Validate file extension
                 if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
                 {
                     ModelState.AddModelError("Photo", "Only .jpg, .jpeg, and .png files are allowed.");
-                    return View(employee); // Return to the view with error message
+                    return View(employee); 
                 }
 
-                // Create a unique file name for the photo
                 var fileName = Guid.NewGuid().ToString() + extension;
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", fileName);
 
-                // Save the file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await Photo.CopyToAsync(stream);
                 }
 
-                // Set the PhotoPath in the employee object
-                employee.PhotoPath = "/uploads/" + fileName; // Save the relative file path to the database
+                employee.PhotoPath = "/uploads/" + fileName;  
             }
             else
             {
-                // If no file is uploaded, keep the PhotoPath null or empty
                 employee.PhotoPath = null;
             }
 
-            // Check if the employee already exists (optional)
             var exists = await _employeeRepo.EmployeeExistsAsync(employee.ContactNo, employee.Dob);
             if (exists)
             {
                 ModelState.AddModelError("", "Employee with same contact number and DOB already exists.");
-                return View(employee); // Return to the view with error message
+                return View(employee);  
             }
 
-            // Generate unique EmployeeCode
             var lastEmployee = await _employeeRepo.GetLastEmployeeAsync();
             int nextId = (lastEmployee?.Id ?? 0) + 1;
             employee.EmployeeCode = $"Emp{nextId:D3}";
 
-            // Save the employee to the database
-            await _employeeRepo.AddAsync(employee);
+             await _employeeRepo.AddAsync(employee);
 
-            // Redirect to the employee list
-            return RedirectToAction(nameof(Index));
+             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -97,23 +86,20 @@ namespace EmployeeManagement.Controllers
             if (id != employee.Id)
                 return BadRequest();
 
-            //if (!ModelState.IsValid)
-            //    return View(employee);
+           
 
             var existingEmployee = await _employeeRepo.GetByIdWithEducationAsync(id);
             if (existingEmployee == null)
                 return NotFound();
 
-            // Check for duplicate contact number + DOB (optional)
-            var duplicateExists = await _employeeRepo.EmployeeExistsAsync(employee.ContactNo, employee.Dob, id);
+             var duplicateExists = await _employeeRepo.EmployeeExistsAsync(employee.ContactNo, employee.Dob, id);
             if (duplicateExists)
             {
                 ModelState.AddModelError("", "Another employee with the same contact number and DOB already exists.");
                 return View(employee);
             }
 
-            // Photo Upload
-            if (Photo != null && Photo.Length > 0)
+             if (Photo != null && Photo.Length > 0)
             {
                 var extension = Path.GetExtension(Photo.FileName).ToLower();
                 if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
@@ -133,8 +119,7 @@ namespace EmployeeManagement.Controllers
                     await Photo.CopyToAsync(stream);
                 }
 
-                // Delete old photo
-                if (!string.IsNullOrEmpty(existingEmployee.PhotoPath))
+                 if (!string.IsNullOrEmpty(existingEmployee.PhotoPath))
                 {
                     var oldFile = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingEmployee.PhotoPath.TrimStart('/'));
                     if (System.IO.File.Exists(oldFile))
@@ -146,8 +131,7 @@ namespace EmployeeManagement.Controllers
                 existingEmployee.PhotoPath = "/uploads/" + uniqueFileName;
             }
 
-            // Update basic fields
-            existingEmployee.FirstName = employee.FirstName;
+             existingEmployee.FirstName = employee.FirstName;
             existingEmployee.MiddleName = employee.MiddleName;
             existingEmployee.LastName = employee.LastName;
             existingEmployee.Dob = employee.Dob;
@@ -155,11 +139,9 @@ namespace EmployeeManagement.Controllers
             existingEmployee.ContactNo = employee.ContactNo;
             existingEmployee.Email = employee.Email;
 
-            // Replace all Educations
-            await _employeeRepo.ReplaceEducationsAsync(existingEmployee, employee.Educations.ToList());
+             await _employeeRepo.ReplaceEducationsAsync(existingEmployee, employee.Educations.ToList());
 
-            // Save changes
-            await _employeeRepo.UpdateAsync(existingEmployee);
+             await _employeeRepo.UpdateAsync(existingEmployee);
 
             return RedirectToAction(nameof(Index));
         }
@@ -192,7 +174,7 @@ namespace EmployeeManagement.Controllers
                 return View("Delete", employee);
             }
 
-            await _employeeRepo.DeleteAsync(id); // deletes educations too
+            await _employeeRepo.DeleteAsync(id);  
             return RedirectToAction(nameof(Index));
         }
 
@@ -215,30 +197,31 @@ namespace EmployeeManagement.Controllers
         }
 
 
-        public async Task<IActionResult> GenerateReport(DateTime? fromDate, DateTime? toDate, string searchKeyword = "", int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Report(DateTime? fromDate, DateTime? toDate, string searchKeyword = "", int page = 1, int pageSize = 10)
         {
-            // Validate fromDate and toDate
+             if (fromDate.HasValue)
+                fromDate = DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc);
+
+            if (toDate.HasValue)
+                toDate = DateTime.SpecifyKind(toDate.Value, DateTimeKind.Utc);
+
             if (fromDate.HasValue && toDate.HasValue && fromDate > toDate)
             {
                 ModelState.AddModelError("", "The 'From Date' cannot be later than the 'To Date'.");
                 return View();
             }
 
-            // Get the filtered and paginated data
             var employees = await _employeeRepo.GetEmployeesReportAsync(fromDate, toDate, searchKeyword, page, pageSize);
-
-            // Pagination data
             var totalRecords = await _employeeRepo.GetEmployeesCountAsync(fromDate, toDate, searchKeyword);
             var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
 
-            // View data
-            ViewData["FromDate"] = fromDate;
-            ViewData["ToDate"] = toDate;
+            ViewData["FromDate"] = fromDate?.ToString("yyyy-MM-dd");
+            ViewData["ToDate"] = toDate?.ToString("yyyy-MM-dd");
             ViewData["SearchKeyword"] = searchKeyword;
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
 
-            return View(employees);
+            return View("Report", employees);
         }
     }
 }

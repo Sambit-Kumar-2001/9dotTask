@@ -122,8 +122,7 @@
 
 @section Scripts {
     <script>
-        // Avatar preview functionality
-        const photoInput = document.getElementById("Photo");
+         const photoInput = document.getElementById("Photo");
         const avatarPreview = document.getElementById("avatarPreview");
         photoInput.addEventListener("change", function () {
             const file = this.files[0];
@@ -136,12 +135,11 @@
                 reader.readAsDataURL(file);
             } else {
                 alert('Only image files are allowed.');
-                photoInput.value = '';  // Reset the file input
+                photoInput.value = '';  
             }
         });
 
-        // DOB validation
-        const dobInput = document.getElementById("Dob");
+         const dobInput = document.getElementById("Dob");
         const dobError = document.getElementById("dobError");
         const today = new Date();
         const minDob = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate());
@@ -164,8 +162,7 @@
         });
 
         window.addEventListener('load', function () {
-            // Check initial DOB value if pre-filled
-            const enteredDob = new Date(dobInput.value);
+             const enteredDob = new Date(dobInput.value);
             if (enteredDob < minDob) {
                 dobError.textContent = "Employee must be less than 60 years old.";
                 dobError.style.display = "block";
@@ -175,8 +172,7 @@
             }
         });
 
-        // Add Education fields dynamically
-        let eduIndex = 1;
+         let eduIndex = 1;
         const eduContainer = document.getElementById("education-container");
 
         document.getElementById('add-education').addEventListener('click', function () {

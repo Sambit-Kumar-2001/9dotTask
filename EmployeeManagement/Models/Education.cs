@@ -8,7 +8,7 @@ namespace EmployeeManagement.Models
 
         public int EmployeeId { get; set; }
 
-        public Employee Employee { get; set; } // No [Required] here
+        public Employee Employee { get; set; }
 
         [Required]
         public string Degree { get; set; }

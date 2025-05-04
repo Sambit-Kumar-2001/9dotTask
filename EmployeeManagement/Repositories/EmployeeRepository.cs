@@ -21,7 +21,7 @@ namespace EmployeeManagement.Repositories
         public async Task<Employee?> GetByIdAsync(int id)
         {
             return await _context.Employees
-                .Include(e => e.Educations) // Eager loading Educations
+                .Include(e => e.Educations)  
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
@@ -51,29 +51,26 @@ namespace EmployeeManagement.Repositories
                     await employee.PhotoFile.CopyToAsync(stream);
                 }
 
-                // Save relative path to DB
+                
                 employee.PhotoPath = "/uploads/" + fileName;
             }
 
 
-            // Reset education IDs and assign EmployeeId
-            if (employee.Educations != null && employee.Educations.Any())
+             if (employee.Educations != null && employee.Educations.Any())
             {
                 foreach (var education in employee.Educations)
                 {
-                    education.Id = 0; // ensure EF treats it as a new record
+                    education.Id = 0;  
                 }
             }
 
-            // Add employee (EF will add Educations too via navigation property)
-            await _context.Employees.AddAsync(employee);
+             await _context.Employees.AddAsync(employee);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Employee employee)
         {
-            // Normalize DOB to UTC before updating
-            if (employee.Dob.Kind == DateTimeKind.Unspecified)
+             if (employee.Dob.Kind == DateTimeKind.Unspecified)
             {
                 employee.Dob = DateTime.SpecifyKind(employee.Dob, DateTimeKind.Utc);
             }
@@ -82,15 +79,13 @@ namespace EmployeeManagement.Repositories
                 employee.Dob = employee.Dob.ToUniversalTime();
             }
 
-            // Handle the employee photo upload/update if a new photo is provided
-            if (employee.PhotoFile != null && employee.PhotoFile.Length > 0)
+             if (employee.PhotoFile != null && employee.PhotoFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
 
-                // Generate a new file name and save the photo
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(employee.PhotoFile.FileName);
+                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(employee.PhotoFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -98,27 +93,22 @@ namespace EmployeeManagement.Repositories
                     await employee.PhotoFile.CopyToAsync(stream);
                 }
 
-                // Save relative file path in the database
-                employee.PhotoPath = "/uploads/" + fileName;
+                 employee.PhotoPath = "/uploads/" + fileName;
             }
 
-            // Attach the employee entity for update
-            _context.Employees.Update(employee);
+             _context.Employees.Update(employee);
 
-            // Update the related education records
-            if (employee.Educations != null && employee.Educations.Any())
+             if (employee.Educations != null && employee.Educations.Any())
             {
                 foreach (var education in employee.Educations)
                 {
-                    education.EmployeeId = employee.Id; // Ensure foreign key is correctly set
+                    education.EmployeeId = employee.Id; 
                 }
 
-                // Update or add education records (assuming the education list is properly tracked in the model)
-                _context.Educations.UpdateRange(employee.Educations);
+                 _context.Educations.UpdateRange(employee.Educations);
             }
 
-            // Commit changes to the database
-            await _context.SaveChangesAsync();
+             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -126,11 +116,9 @@ namespace EmployeeManagement.Repositories
             var emp = await _context.Employees.Include(e => e.Educations).FirstOrDefaultAsync(e => e.Id == id);
             if (emp != null)
             {
-                // Delete related education records
-                _context.Educations.RemoveRange(emp.Educations);
+                 _context.Educations.RemoveRange(emp.Educations);
 
-                // Delete the employee
-                _context.Employees.Remove(emp);
+                 _context.Employees.Remove(emp);
                 await _context.SaveChangesAsync();
             }
         }
@@ -170,10 +158,10 @@ namespace EmployeeManagement.Repositories
                 .Where(e => e.EmployeeId == existingEmployee.Id)
                 .ToListAsync();
 
-            _context.Educations.RemoveRange(existingEducations); // delete all
+            _context.Educations.RemoveRange(existingEducations); 
             foreach (var edu in newEducations)
             {
-                edu.Id = 0; // Ensure EF treats them as new
+                edu.Id = 0;
                 edu.EmployeeId = existingEmployee.Id;
             }
 
@@ -196,22 +184,22 @@ namespace EmployeeManagement.Repositories
             IQueryable<Employee> query = _context.Employees.Include(e => e.Educations);
 
             if (fromDate.HasValue)
-            {
                 query = query.Where(e => e.Dob >= fromDate.Value);
-            }
 
             if (toDate.HasValue)
-            {
                 query = query.Where(e => e.Dob <= toDate.Value);
-            }
 
-            if (!string.IsNullOrEmpty(searchKeyword))
+            if (!string.IsNullOrWhiteSpace(searchKeyword))
             {
-                query = query.Where(e => e.FirstName.Contains(searchKeyword) || e.LastName.Contains(searchKeyword) || e.ContactNo.Contains(searchKeyword));
+                query = query.Where(e =>
+                    EF.Functions.ILike(e.FirstName, $"%{searchKeyword}%") ||
+                    EF.Functions.ILike(e.LastName, $"%{searchKeyword}%") ||
+                    EF.Functions.ILike(e.ContactNo, $"%{searchKeyword}%") ||
+                    EF.Functions.ILike(e.EmployeeCode, $"%{searchKeyword}%")
+                );
             }
 
-            // Apply pagination
-            query = query.Skip((page - 1) * pageSize).Take(pageSize);
+             query = query.Skip((page - 1) * pageSize).Take(pageSize);
 
             return await query.ToListAsync();
         }
