@@ -1,25 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
+using EmployeeManagement.Helper;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EmployeeManagement.Models
 {
     public class Employee
     {
-        public int Id { get; set; } // Primary Key
+        public int Id { get; set; }
+
+        public string EmployeeCode { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name should only contain letters and spaces.")]
         public string FirstName { get; set; }
 
-        public string? MiddleName { get; set; }
+        public string MiddleName { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name should only contain letters and spaces.")]
         public string LastName { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime Dob { get; set; } // Date of Birth
+        public DateTime Dob { get; set; }
 
         public int Age => DateTime.Now.Year - Dob.Year;
 
@@ -33,9 +37,16 @@ namespace EmployeeManagement.Models
         public string Email { get; set; }
 
         [Required]
-        public string Gender { get; set; } // "Male", "Female"
+        public Gender Gender { get; set; }
 
-        // Navigation Property
+        public string? PhotoPath { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Upload Photo")]
+        [DataType(DataType.Upload)]
+        [FileValidation(new string[] { ".jpg", ".jpeg", ".png" }, 2)]
+        public IFormFile PhotoFile { get; set; }
+
         public ICollection<Education> Educations { get; set; }
     }
 }

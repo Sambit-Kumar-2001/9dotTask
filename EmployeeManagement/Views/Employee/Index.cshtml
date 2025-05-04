@@ -1,0 +1,61 @@
+﻿@model IEnumerable<EmployeeManagement.Models.Employee>
+
+@{
+    ViewData["Title"] = "Employee List";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class=" fw-lighter display-6 text-primary">Employee List</p>
+        <a asp-action="Create" class="btn btn-info btn-sm shadow-sm">+ Add Employee</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered border-0 rounded-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>Sr No</th>
+                    <th>Employee Code</th>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Contact No</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int srNo = 1;
+                    foreach (var emp in Model)
+                    {
+                        <tr>
+                            <td>@srNo</td>
+                            <td>@emp.EmployeeCode</td>
+                            <td>@($"{emp.FirstName} {emp.MiddleName} {emp.LastName}")</td>
+                            <td>@emp.Dob.ToShortDateString()</td>
+                            <td>@emp.Age</td>
+                            <td>@emp.Gender</td>
+                            <td>@emp.ContactNo</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Actions">
+                                    <a asp-action="Details" asp-route-id="@emp.Id" class="btn btn-info btn-sm">View</a>
+                                    <a asp-action="Edit" asp-route-id="@emp.Id" class="btn btn-warning btn-sm">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@emp.Id" class="btn btn-danger btn-sm">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        srNo++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">No employees found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

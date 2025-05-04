@@ -245,6 +245,10 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
+      "Id": "C:\\Users\\Realme\\Desktop\\9dot\\9dotTask\\EmployeeManagement\\wwwroot\\uploads\\c5b5e8b7-ff12-4924-b011-bfc75ff518da.jpg",
+      "PackagePath": "staticwebassets\\uploads\\c5b5e8b7-ff12-4924-b011-bfc75ff518da.jpg"
+    },
+    {
       "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.EmployeeManagement.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

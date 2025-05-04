@@ -1,4 +1,6 @@
+using EmployeeManagement.Interfaces;
 using EmployeeManagement.Models;
+using EmployeeManagement.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<EmployeeDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("EmployeeManagementConnection")));
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+
 
 var app = builder.Build();
 
