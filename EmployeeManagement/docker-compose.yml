@@ -1,0 +1,10 @@
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__EmployeeManagementConnection=Host=host.docker.internal;Port=5432;Database=EmployeeManagement;Username=postgres;Password=123456
